@@ -7,7 +7,7 @@ import { LeadsService } from "../services/leads/leads.service";
 import { AuthService } from "../services/auth/auth.services";
 import ZendeskService from "../services";
 import { CustomerService } from "../services/customer/customer.service";
-import { OrganizationService } from "../services/organization/organization.service";
+import { TasksService } from "../services/task/task.service";
 
 const container = new Container();
 
@@ -22,8 +22,8 @@ container
   .to(LeadsService)
   .inSingletonScope();
   container
-  .bind<OrganizationService>(OrganizationService)
-  .to(OrganizationService)
+  .bind<TasksService>(TasksService)
+  .to(TasksService)
   .inSingletonScope();
 container.bind<AuthService>(AuthService).to(AuthService).inSingletonScope();
 container

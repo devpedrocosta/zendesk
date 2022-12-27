@@ -28,7 +28,7 @@ export class LeadsService {
     ctx: Context
   ): Promise<HttpResponse<{ id: string; wwwRef: { model: string } }>> {
     try {
-      const url = `${baseUrl.default}`;
+      const url = `${baseUrl.default}/leads`;
       ctx.payload.Description = `${
         ctx.payload.Description || ""
       }\n${this.callInfo(ctx.payload)}`;
@@ -57,7 +57,7 @@ export class LeadsService {
       let { id } = ctx.payload;
       if (!id) throw new Error("ID not found");
 
-      const url = `${baseUrl.default}/${id}`;
+      const url = `${baseUrl.default}/leads/${id}`;
 
       let result = await request(
         `${url}`,
@@ -67,7 +67,7 @@ export class LeadsService {
       );
 
       return createOk(ctx.id, {
-        id: result.id,
+        id: result.data.id,
         wwwRef: {
           model: url,
         },
@@ -120,14 +120,14 @@ export class LeadsService {
   public async getLeadssByid(ctx: Context) {
     try {
       let result = await request(
-        `${baseUrl.default}/${this.getBycontext(
+        `${baseUrl.default}/leads/${this.getBycontext(
           ctx.payload
         )}`,
         HttpMethod.GET,
         this.authService.getToken(),
         {}
       );
-      return success(ctx.id, result.body);
+      return success(ctx.id, result.body.data);
     } catch (error) {
       console.log(error);
       return serverError(ctx.id);
@@ -137,7 +137,7 @@ export class LeadsService {
   getBycontext(payload: any) {
     let { id } = payload;
     if (!payload.KEY && id) {
-      return `/${id}`;
+      return `${id}`;
     }
     if (payload.KEY) {
       return `?${payload.KEY}=${payload.VALUE}`;

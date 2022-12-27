@@ -15,6 +15,7 @@ import {
   success,
   createOk,
 } from "../../util/helppers";
+import { baseUrl } from "../../env/enviroment";
 
 @injectable()
 export class CustomerService {
@@ -30,7 +31,7 @@ export class CustomerService {
   ) {
     try {
       let result = await request(
-        `${ctx.opts.domain}}/api/publica/usuarios${this.getBycontext(
+        `${baseUrl.default}/contacts/${this.getBycontext(
           ctx.payload
         )}`,
         HttpMethod.GET,
@@ -49,16 +50,12 @@ export class CustomerService {
     ctx: Context
   ): Promise<HttpResponse<{ id: string; wwwRef: { model: string } }>> {
     try {
-      const url = `${ctx.opts.domain}/api/publica/usuarios`;
-      if(ctx.payload.telefones){
-        ctx.payload.telefones = [ctx.payload.telefones]
-      }
-     
+      const url = `${baseUrl.default}/contacts`;
       let result = await request(
         `${url}`,
         HttpMethod.POST,
         this.authService.getToken(),
-        ctx.payload
+       {data:ctx.payload} 
       );
 
       return createOk(ctx.id, {
@@ -76,7 +73,7 @@ export class CustomerService {
 
     let { id } = payload;
     if (!payload.KEY && id) {
-      return `/${id}`;
+      return `${id}`;
     }
     if (payload.KEY) {
       return `?${payload.KEY}=${payload.VALUE}`;
@@ -92,15 +89,12 @@ export class CustomerService {
     try {
       let { id } = ctx.payload;
       if (!id) throw new Error("ID not found");
-      const url = `${ctx.opts.domain}/api/publica/usuarios/${id}`;
-      if(ctx.payload.telefones){
-        ctx.payload.telefones = [ctx.payload.telefones]
-      }
+      const url = `${baseUrl.default}/contacts/${id}`;
       let result = await request(
         `${url}`,
         HttpMethod.PUT,
         this.authService.getToken(),
-        ctx.payload
+       {data:ctx.payload} 
       );
 
       return createOk(ctx.id, {

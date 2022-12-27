@@ -1,8 +1,8 @@
 import { MetafieldType, Lang } from "55tec_integration_lib/model/metadata";
 import { label, prop } from "../../../util/metadata/metadata.decorators";
 
-@label(Lang.PT_BR, "Tíquete")
-export class Ticket {
+@label(Lang.PT_BR, "Leads")
+export class Leads {
 
   @prop({
     name: "last_name",
@@ -119,7 +119,7 @@ export class Ticket {
     type: MetafieldType.OBJECT,
     label: { [Lang.PT_BR]: "Campos personalizados" },
   })
-  custom_fields?: string;
+  custom_fields?: any;
 
   @prop({
     name: "tags",
@@ -144,4 +144,4 @@ export class Ticket {
 
 
 
-export default Ticket;
+export default Leads;

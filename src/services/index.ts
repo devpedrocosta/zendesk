@@ -7,15 +7,17 @@ import { Client as BrowserClient } from "55tec_integration_lib/model/protocol/br
 import { Context } from "55tec_integration_lib/service";
 import { LeadsService } from "./leads/leads.service";
 import { CustomerService } from "./customer/customer.service";
-import { OrganizationService } from "./organization/organization.service";
+import { TasksService } from "./task/task.service";
+import { DealsService } from "./deals/deals.service";
 
 @injectable()
 export class ZendeskService {
   constructor(
-    @inject(LeadsService) private readonly ticketService: LeadsService,
+    @inject(LeadsService) private readonly leadsService: LeadsService,
+    @inject(DealsService) private readonly dealService: DealsService,
     @inject(CustomerService) private readonly customerService: CustomerService,
-    @inject(OrganizationService)
-    private readonly organizationService: OrganizationService,
+    @inject(TasksService)
+    private readonly tasksService: TasksService,
     @inject(BrowserClient) private readonly browserClient: BrowserClient
   ) {}
 
@@ -29,43 +31,51 @@ export class ZendeskService {
     }
 
     switch (info.action) {
-      case "incidents/get-metadata":
-        return this.ticketService.getMetadata();
+      case "leads/get-metadata":
+        return this.leadsService.getMetadata();
 
-      case "incidents/create":
-        return await this.ticketService.createTicket(ctx);
+      case "leads/create":
+        return await this.leadsService.createLeads(ctx);
 
-      case "incidents/update":
-        return await this.ticketService.updateTicket(ctx);
+      case "leads/update":
+        return await this.leadsService.updateLeads(ctx);
 
-      case "incidents/find":
-        return await this.ticketService.getTicketsByid(ctx);
+      case "leads/find":
+        return await this.leadsService.getLeadssByid(ctx);
 
-      case "incidents/attachment":
-        return await this.ticketService.sendFileForTicket(ctx);
+      case "deals/get-metadata":
+        return this.dealService.getMetadata();
+      case "deals/create":
+        return await this.dealService.createDeals(ctx);
 
-      case "customers/get-metadata":
+      case "deals/update":
+        return await this.dealService.updateDeals(ctx);
+
+      case "deals/find":
+        return await this.dealService.getDealsByid(ctx);
+
+      case "contacts/get-metadata":
         return this.customerService.getMetadata();
 
-      case "customers/create":
+      case "contacts/create":
         return await this.customerService.createCustomer(ctx);
 
-      case "customers/update":
+      case "contacts/update":
         return await this.customerService.updateCustomer(ctx);
 
-      case "customers/find":
+      case "contacts/find":
         return await this.customerService.getCustomer(ctx);
 
-      case "organizations/get-metadata":
-        return this.organizationService.getMetadata();
-      case "organizations/create":
-        return await this.organizationService.createOrganization(ctx);
+      case "task/get-metadata":
+        return this.tasksService.getMetadata();
+      case "task/create":
+        return await this.tasksService.createTask(ctx);
 
-      case "organizations/update":
-        return await this.organizationService.updateOrganization(ctx);
+      case "task/update":
+        return await this.tasksService.updateTask(ctx);
 
-      case "organizations/find":
-        return await this.organizationService.getOrganizationsByid(ctx);
+      case "task/find":
+        return await this.tasksService.getTasksByid(ctx);
 
       default:
         throw new Error(
