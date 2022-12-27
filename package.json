@@ -1,0 +1,42 @@
+{
+  "name": "zendesk_integration",
+  "version": "0.0.1",
+  "dependencies": {
+    "55tec_integration_lib": "git+https://bitbucket.org/55TELECOM/55tec_integration_lib.git",
+    "inversify": "^6.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.4",
+    "pluralize": "^8.0.0",
+    "reflect-metadata": "^0.1.13",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "ts-loader": "^9.3.1",
+    "ts-node": "^10.9.1",
+    "tsc-watch": "^5.0.3",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "test": "jest  --config ./jest.config.js --no-cache --passWithNoTests",
+    "build": "rm -rf dist/ && tsc && npm run build-func",
+    "postinstall": "npm run build",
+    "watch": "tsc-watch --onSuccess \"npm start\"",
+    "build-func": "webpack --config ./webpack.config.js"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.0.3",
+    "@types/jsonwebtoken": "^8.5.9",
+    "@types/node": "^18.7.18",
+    "@types/pluralize": "0.0.29",
+    "@types/request": "^2.48.8",
+    "@types/request-promise": "^4.1.48",
+    "@types/uuid": "^8.3.4",
+    "jest": "^25.1.0",
+    "nodemon": "^2.0.19",
+    "ts-jest": "^25.2.0",
+    "typescript": "^4.8.3",
+    "undefined": "^0.1.0",
+    "uuid": "^9.0.0"
+  }
+}
