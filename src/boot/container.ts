@@ -8,6 +8,7 @@ import { AuthService } from "../services/auth/auth.services";
 import ZendeskService from "../services";
 import { CustomerService } from "../services/customer/customer.service";
 import { TasksService } from "../services/task/task.service";
+import { DealsService } from "../services/deals/deals.service";
 
 const container = new Container();
 
@@ -16,6 +17,10 @@ const channel: Channel = process as Channel;
 container
   .bind<CustomerService>(CustomerService)
   .to(CustomerService)
+  .inSingletonScope();
+container
+  .bind<DealsService>(DealsService)
+  .to(DealsService)
   .inSingletonScope();
 container
   .bind<LeadsService>(LeadsService)
