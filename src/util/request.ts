@@ -43,8 +43,8 @@ export default async (
     qs:params,
     body: method !== HttpMethod.GET ? JSON.stringify(body) : undefined,
     headers: {
-      "Content-Type": type? "multipart/form-data": "application/json",
-      Accept: type? "multipart/form-data": "application/json",
+      "Content-Type": "application/json",
+      Accept: "application/json",
       Authorization: `Basic ${token}`
     },
     simple: false,

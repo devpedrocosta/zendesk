@@ -5,19 +5,19 @@ import {
 } from "55tec_integration_lib/model/protocol/integrator/request";
 import { Client as BrowserClient } from "55tec_integration_lib/model/protocol/browser";
 import { Context } from "55tec_integration_lib/service";
-import { LeadsService } from "./leads/leads.service";
+import { TicketService } from "./ticket/ticket.service";
 import { CustomerService } from "./customer/customer.service";
-import { TasksService } from "./task/task.service";
 import { DealsService } from "./deals/deals.service";
+import { LeadsService } from "./leads/leads.service";
 
 @injectable()
-export class ZendeskService {
+export class ZendesksellService {
   constructor(
+    @inject(TicketService) private readonly ticketService: TicketService,
     @inject(LeadsService) private readonly leadsService: LeadsService,
-    @inject(DealsService) private readonly dealService: DealsService,
     @inject(CustomerService) private readonly customerService: CustomerService,
-    @inject(TasksService)
-    private readonly tasksService: TasksService,
+    @inject(DealsService)
+    private readonly dealsService: DealsService,
     @inject(BrowserClient) private readonly browserClient: BrowserClient
   ) {}
 
@@ -31,51 +31,71 @@ export class ZendeskService {
     }
 
     switch (info.action) {
-      case "leads/get-metadata":
-        return this.leadsService.getMetadata();
+      case "incidents/get-metadata":
+        return this.ticketService.getMetadata();
 
-      case "leads/create":
-        return await this.leadsService.createLeads(ctx);
+      case "incidents/create":
+        return await this.ticketService.createTicket(ctx);
 
-      case "leads/update":
-        return await this.leadsService.updateLeads(ctx);
+      case "incidents/update":
+        return await this.ticketService.updateTicket(ctx);
 
-      case "leads/find":
-        return await this.leadsService.getLeadssByid(ctx);
+      case "incidents/find":
+        return await this.ticketService.getTicket(ctx);
 
-      case "deals/get-metadata":
-        return this.dealService.getMetadata();
-      case "deals/create":
-        return await this.dealService.createDeals(ctx);
+      case "incidents/list":
+        return await this.ticketService.getListTicket(ctx);
 
-      case "deals/update":
-        return await this.dealService.updateDeals(ctx);
-
-      case "deals/find":
-        return await this.dealService.getDealsByid(ctx);
-
-      case "contacts/get-metadata":
+      case "customers/get-metadata":
         return this.customerService.getMetadata();
 
-      case "contacts/create":
+      case "customers/create":
         return await this.customerService.createCustomer(ctx);
 
-      case "contacts/update":
+      case "customers/update":
         return await this.customerService.updateCustomer(ctx);
 
-      case "contacts/find":
+      case "customers/find":
         return await this.customerService.getCustomer(ctx);
 
-      case "task/get-metadata":
-        return this.tasksService.getMetadata();
-      case "task/create":
-        return await this.tasksService.createTask(ctx);
+      case "customers/list":
+        return await this.customerService.getListCustomer(ctx);
 
-      case "task/update":
-        return await this.tasksService.updateTask(ctx);
+      case "sale/get-metadata":
+        return this.leadsService.getMetadata();
 
-      case "task/find":
-        return await this.tasksService.getTasksByid(ctx);
+      case "sale/create":
+        return await this.leadsService.createLeads(ctx);
+
+      case "sale/update":
+        return await this.leadsService.updateLeads(ctx);
+
+      case "sale/find":
+        return await this.leadsService.getLeads(ctx);
+
+      case "sale/list":
+        return await this.leadsService.getListLeads(ctx);
+
+        case "sale/conversor":
+          return await this.leadsService.setConversorLeads(ctx);
+
+      case "deals/get-metadata":
+        return this.dealsService.getMetadata();
+      case "deals/create":
+        return await this.dealsService.createDeals(ctx);
+
+      case "deals/update":
+        return await this.dealsService.updateDeals(ctx);
+
+      case "deals/find":
+        return await this.dealsService.getDeals(ctx);
+
+      case "deals/list":
+        return await this.dealsService.getListDeals(ctx);
+      case "users/get-oauth-url":
+        return this.customerService.getOAuthURL(ctx);
+      case "users/get-token":
+        return this.customerService.getOAuthToken(ctx);
 
       default:
         throw new Error(
@@ -85,4 +105,4 @@ export class ZendeskService {
   }
 }
 
-export default ZendeskService;
+export default ZendesksellService;

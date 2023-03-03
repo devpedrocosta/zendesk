@@ -1,0 +1,1 @@
+{"version":3,"file":"setup.js","sourceRoot":"","sources":["../../../src/browser/func/setup.ts"],"names":[],"mappings":";;;;;;;;;;;AAEA,mBAAyB,GAAY;IACjC,OAAO,IAAI,OAAO,CAAC,CAAO,OAAO,EAAE,MAAM,EAAE,EAAE;QACzC,IAAI;YACA,OAAO,CAAC,GAAG,CAAC,CAAC;SAChB;QAAC,OAAO,GAAG,EAAE;YACV,MAAM,CAAC,GAAG,CAAC,CAAC;SACf;IACL,CAAC,CAAA,CAAC,CAAC;AACP,CAAC;AARD,4BAQC;AAAA,CAAC"}

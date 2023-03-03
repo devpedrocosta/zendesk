@@ -1,110 +1,141 @@
 import "reflect-metadata";
 import { inject, injectable } from "inversify";
-import { Body as RequestBody } from "55tec_integration_lib/model/protocol/integrator/request";
-import request, { validateToken } from "../../util/request";
-import { getMetadata } from "../../util/metadata/metadata.decorators";
+import request from "../../util/request";
+import { getMetadata } from "55tec_integration_lib/model/metadata/decorator";
 import { HttpMethod } from "../../util/http-method.enum";
-import { ResponseError } from "55tec_integration_lib/model/protocol/integrator/response";
-import { StatusCode } from "55tec_integration_lib/model/protocol/index";
 import { AuthService } from "../auth/auth.services";
-import { Customer } from "./model";
+import { Customer } from "../../models/customer";
 import { Context } from "55tec_integration_lib/service";
+import { GetTokenOAuthBody, GetUrlOAuthBody, ResponseError } from "55tec_integration_lib/model/protocol/integrator/response";
+import { StatusCode } from "55tec_integration_lib/model/protocol";
+import { bodyFormatResponse, getBycontext } from "../../util/projection";
 import {
-  HttpResponse,
-  serverError,
-  success,
-  createOk,
-} from "../../util/helppers";
-import { baseUrl } from "../../env/enviroment";
+  FindBody,
+  SaveBody,
+  ListBody,
+} from "55tec_integration_lib/model/protocol/integrator/response";
 
 @injectable()
 export class CustomerService {
-
   constructor(@inject(AuthService) private readonly authService: AuthService) {}
 
   public getMetadata() {
     return getMetadata(new Customer());
   }
 
-  public async getCustomer(
-    ctx: Context
-  ) {
+  async getOAuthURL(ctx: Context):Promise<GetUrlOAuthBody> {
     try {
+      const url = `https://api.getbase.com/oauth2/token${getBycontext(
+        ctx.payload.data
+      )}`;
       let result = await request(
-        `${baseUrl.default}/contacts/${this.getBycontext(
-          ctx.payload
-        )}`,
-        HttpMethod.GET,
+        url,
+        HttpMethod.POST,
         this.authService.getToken(),
         {}
       );
-
-      return success(ctx.id, [result.data]);
-    } catch (error) {
-      console.log(error);
-      return serverError(ctx.id);
+      return {
+        url: result.access_token
+      };
+    } catch (error:any) {
+      throw new ResponseError(error.errors[0].error.message, StatusCode.FORBIDDEN); 
     }
   }
 
-  public async createCustomer(
-    ctx: Context
-  ): Promise<HttpResponse<{ id: string; wwwRef: { model: string } }>> {
+async getOAuthToken(ctx: Context):Promise<GetTokenOAuthBody> {
+  try {
+    const url = `https://api.getbase.com/oauth2/token${getBycontext(
+      ctx.payload.data
+    )}`;
+    let result = await request(
+      url,
+      HttpMethod.POST,
+      this.authService.getToken(),
+      {}
+    );
+    return {
+      token: result.access_token,
+      refresh: result.refresh_token
+    };
+  } catch (error:any) {
+    throw new ResponseError(error.errors[0].error.message, StatusCode.FORBIDDEN); 
+  }
+  }
+
+  public async getCustomer(ctx: Context): Promise<FindBody> {
+    const url = `https://api.getbase.com/v2/contacts${getBycontext(
+      ctx.payload.data
+    )}`;
+    let result = await request(
+      url,
+      HttpMethod.GET,
+      this.authService.getToken(),
+      {}
+    );
+    return {
+      data: bodyFormatResponse(ctx, result),
+      wwwRef: {
+        model: url,
+      },
+    };
+  }
+
+  public async getListCustomer(ctx: Context): Promise<ListBody> {
+    let result = await request(
+      `https://api.getbase.com/v2/contacts`,
+      HttpMethod.GET,
+      this.authService.getToken(),
+      {}
+    );
+
+    return {
+      data: bodyFormatResponse(ctx, result),
+      pagination: ctx.payload.pagination,
+    };
+  }
+
+  public async createCustomer(ctx: Context): Promise<SaveBody> {
     try {
-      const url = `${baseUrl.default}/contacts`;
-      let result = await request(
+      const url = `https://api.getbase.com/v2/contacts`;
+
+      const data = await request(
         `${url}`,
         HttpMethod.POST,
         this.authService.getToken(),
-       {data:ctx.payload} 
+        { data: ctx.payload }
       );
 
-      return createOk(ctx.id, {
-        id: result.data.id,
+      return {
+        id: data.id,
         wwwRef: {
           model: url,
         },
-      });
+      };
     } catch (error: any) {
-      return serverError(ctx.id, error?.response.data?.Message || "");
+      throw new ResponseError(error.errors[0].error.message, StatusCode.FORBIDDEN);
     }
   }
 
-  getBycontext(payload: any) {
-
-    let { id } = payload;
-    if (!payload.KEY && id) {
-      return `${id}`;
-    }
-    if (payload.KEY) {
-      return `?${payload.KEY}=${payload.VALUE}`;
-    }
-
-    throw new Error("Customers not found");
-  }
-
-
-  public async updateCustomer(
-    ctx: Context
-  ): Promise<HttpResponse<{ id: string; wwwRef: { model: string } }>> {
+  public async updateCustomer(ctx: Context): Promise<SaveBody> {
+    let { id } = ctx.payload;
+    if (!id) throw new Error("ID not found");
     try {
-      let { id } = ctx.payload;
-      if (!id) throw new Error("ID not found");
-      const url = `${baseUrl.default}/contacts/${id}`;
-      let result = await request(
+      const url = `https://api.getbase.com/v2/contacts/${id}`;
+
+      const data = await request(
         `${url}`,
         HttpMethod.PUT,
         this.authService.getToken(),
-       {data:ctx.payload} 
+        { data: ctx.payload }
       );
-
-      return createOk(ctx.id, {
-        id: result.data.id,
+      return {
+        id: data.id,
         wwwRef: {
           model: url,
         },
-      });
+      };
     } catch (error: any) {
-      return serverError(ctx.id, error?.response.data?.Message || "");
+      throw new ResponseError(error.errors[0].error.message, StatusCode.FORBIDDEN);
     }
   }
 }
