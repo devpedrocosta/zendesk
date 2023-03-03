@@ -1,5 +1,5 @@
 {
-  "name": "acelerato_integration",
+  "name": "zendesk_integration",
   "version": "0.0.1",
   "dependencies": {
     "55tec_integration_lib": "git+https://bitbucket.org/55TELECOM/55tec_integration_lib.git",
